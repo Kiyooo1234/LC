@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "fastclick",
+	"version": "${version}",
+	"name": "FastClick",
+	"description": "Reduces the left-click attack and block-breaking delay. Toggle on/off with a key (default: J).",
+	"authors": [
+		"You"
+	],
+	"license": "CC0-1.0",
+	"icon": "assets/fastclick/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"com.example.fastclick.FastClickClient"
+		]
+	},
+	"mixins": [
+		{
+			"config": "fastclick.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

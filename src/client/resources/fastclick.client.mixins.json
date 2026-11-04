@@ -1,0 +1,15 @@
+{
+	"required": true,
+	"package": "com.example.fastclick.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"MinecraftMixin",
+		"MultiPlayerGameModeMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
