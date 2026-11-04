@@ -1,23 +1,53 @@
-name: Build jar
-
+name: build
+ 
 on:
   push:
-  workflow_dispatch:
-
+  pull_request:
+  workflow_dispatch:   # adds a "Run workflow" button in the Actions tab
+ 
+permissions:
+  contents: write      # needed so the job can attach the jar to a Release
+ 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+ 
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 21
+          java-version: '21'
+          distribution: 'temurin'
+ 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+ 
       - name: Build
-        run: |
-          chmod +x gradlew
-          ./gradlew build
-      - uses: actions/upload-artifact@v4
+        run: ./gradlew build --no-daemon --stacktrace
+ 
+      - name: List output
+        run: ls -la build/libs/
+ 
+      - name: Upload jar artifact
+        uses: actions/upload-artifact@v4
         with:
           name: fastclick-jar
-          path: build/libs/fastclick-*[0-9].jar
+          path: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
+            !build/libs/*-dev.jar
+          if-no-files-found: error
+ 
+      # Optional: publish the jar on the repo's Releases page for every push to main/master
+      - name: Publish release
+        if: github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'master')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: FastClick build ${{ github.run_number }}
+          files: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
+            !build/libs/*-dev.jar
